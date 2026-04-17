@@ -10,7 +10,7 @@ class AppMenuBar(QMenuBar):
 
     add_project_sig = Signal(str, str)
 
-    def __init__(self, service, parent=None):
+    def __init__(self, database_worker: DatabaseWorker, parent=None):
         super().__init__(parent)
 
         # --- FILE ---
@@ -60,7 +60,7 @@ class AppMenuBar(QMenuBar):
         self.addMenu(self.settings_menu)
         self.addMenu(self.help_menu)
 
-        self.database_worker = DatabaseWorker(service)
+        self.database_worker = database_worker
 
         self.add_project_sig.connect(self.database_worker.add_project)
 

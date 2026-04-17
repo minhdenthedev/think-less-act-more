@@ -36,6 +36,7 @@ class ClarifyWidget(QWidget):
 
         self.database_worker = database_worker
         self.database_worker.capture_tasks.connect(self.display_thoughts)
+        self.database_worker.data_changed_sig.connect(self.refresh_data)
 
         self.fetch_thoughts_sig.connect(self.database_worker.fetch_capture_tasks)
         self.delete_action_sig.connect(self.database_worker.delete_action)
@@ -49,6 +50,7 @@ class ClarifyWidget(QWidget):
         self.thought_model.removeRow(row)
 
     def display_thoughts(self, thoughts: List[TaskRecord]):
+        self.thought_model.clear()
         for t in thoughts:
             item = QStandardItem()
             item.setEditable(False)
@@ -73,5 +75,4 @@ class ClarifyWidget(QWidget):
         self.delete_action_sig.emit(task_id)
 
     def refresh_data(self):
-        self.thought_model.clear()
         self.fetch_thoughts_sig.emit()

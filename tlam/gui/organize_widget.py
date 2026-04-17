@@ -30,6 +30,7 @@ class OrganizeWidget(QWidget):
         self.database_worker = database_worker
         self.database_worker.projects_fetched_sig.connect(self.on_projects_fetched)
         self.database_worker.clarified_fetched_sig.connect(self.on_actions_fetched)
+        self.database_worker.data_changed_sig.connect(self.refresh_data)
 
         self.fetch_projects_sig.connect(self.database_worker.fetch_projects)
         self.fetch_actions_sig.connect(self.database_worker.fetch_clarified_tasks)
@@ -43,6 +44,7 @@ class OrganizeWidget(QWidget):
         self.projects = []
 
     def display_actions(self, actions):
+        self.action_model.clear()
         for a in actions:
             item = QStandardItem()
             item.setSizeHint(QSize(0, 40))
@@ -66,5 +68,4 @@ class OrganizeWidget(QWidget):
         self.display_actions(actions)
 
     def refresh_data(self):
-        self.action_model.clear()
         self.fetch_projects_sig.emit()

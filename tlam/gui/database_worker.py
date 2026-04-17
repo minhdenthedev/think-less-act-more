@@ -10,6 +10,7 @@ class DatabaseWorker(QObject):
     organized_fetched_sig = Signal(object)
     service_clarified_sig = Signal(object)
     projects_fetched_sig = Signal(object)
+    data_changed_sig = Signal()
 
     def __init__(self, service: GTDService):
         super().__init__()
@@ -22,12 +23,15 @@ class DatabaseWorker(QObject):
 
     def add_thought_to_database(self, thought):
         self.service.capture(thought)
+        self.data_changed_sig.emit()
 
     def delete_action(self, task_id):
         self.service.delete_task(task_id)
+        self.data_changed_sig.emit()
 
     def clarify_action(self, task_id, task_title):
         self.service.clarify(task_id, task_title)
+        self.data_changed_sig.emit()
 
     def fetch_clarified_tasks(self):
         tasks = self.service.get_clarified_tasks()
@@ -46,7 +50,8 @@ class DatabaseWorker(QObject):
             self.service.new_project(name, icon)
         else:
             self.service.new_project(name)
-        print(f"Project added: {name}")
+        self.data_changed_sig.emit()
 
     def organize_action(self, task_id, project_id):
         self.service.organized(task_id, project_id)
+        self.data_changed_sig.emit()

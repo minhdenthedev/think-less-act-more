@@ -31,13 +31,9 @@ class MainTabWidget(QTabWidget):
 
         self.setup_tabs()
 
-        self.currentChanged.connect(self.on_tab_changed)
+        for tab in self.tabs.values():
+            tab.refresh_data()
 
     def setup_tabs(self):
         for name, widget in self.tabs.items():
             self.addTab(widget, name)
-
-    def on_tab_changed(self, index):
-        widget = self.widget(index)
-        if hasattr(widget, "refresh_data"):
-            widget.refresh_data()  # type: ignore

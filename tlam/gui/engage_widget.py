@@ -66,6 +66,7 @@ class EngageWidget(QWidget):
         self.database_worker.organized_fetched_sig.connect(
             self.on_organized_tasks_fetched
         )
+        self.database_worker.data_changed_sig.connect(self.refresh_data)
 
         self.fetch_projects_sig.connect(self.database_worker.fetch_projects)
         self.fetch_tasks_sig.connect(self.database_worker.fetch_organized_tasks)
@@ -94,6 +95,8 @@ class EngageWidget(QWidget):
                 self.engage_btn.setEnabled(False)
 
     def on_projects_fetched(self, projects):
+        self.model.clear()
+        self.root = self.model.invisibleRootItem()
         for project in projects:
             parent = QStandardItem(project.project_name)
             parent.setEditable(False)
@@ -111,6 +114,4 @@ class EngageWidget(QWidget):
             parent.appendRow(child)
 
     def refresh_data(self):
-        self.model.clear()
-        self.root = self.model.invisibleRootItem()
         self.fetch_projects_sig.emit()

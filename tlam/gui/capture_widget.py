@@ -19,24 +19,6 @@ class CaptureWidget(QWidget):
     Widget for capture page
     """
 
-    fake_thoughts = [
-        "Write a project proposal",
-        "Fix login page bug",
-        "Prepare weekly report",
-        "Update user database",
-        "Design homepage mockup",
-        "Test payment gateway",
-        "Clean up old files",
-        "Optimize API performance",
-        "Schedule team meeting",
-        "Review pull requests",
-        "Document new features",
-        "Refactor authentication module",
-        "Set up CI/CD pipeline",
-        "Research competitor products",
-        "Backup production database",
-    ]
-
     fetch_thoughts = Signal()
     add_thought = Signal(str)
 
@@ -62,17 +44,18 @@ class CaptureWidget(QWidget):
 
         self.database_worker = database_worker
         self.database_worker.capture_tasks.connect(self.display_thoughts)
+        self.database_worker.data_changed_sig.connect(self.refresh_data)
 
         self.fetch_thoughts.connect(self.database_worker.fetch_capture_tasks)
         self.add_thought.connect(self.database_worker.add_thought_to_database)
 
     def on_thought_input_field_enter(self):
         thought = self.thought_input_field.text()
-        self.thought_model.appendRow(QStandardItem(thought))
         self.thought_input_field.clear()
         self.add_thought.emit(thought)
 
     def display_thoughts(self, thoughts: List[TaskRecord]):
+        self.thought_model.clear()
         for thought in thoughts:
             item = QStandardItem(thought.task_title)
             item.setEditable(False)

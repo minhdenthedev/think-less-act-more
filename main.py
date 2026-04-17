@@ -35,8 +35,10 @@ if __name__ == "__main__":
     window.resize(availabe_geom.width() // 2, availabe_geom.height() // 2)
     central_widget = MainTabWidget(database_worker, window)
     window.setCentralWidget(central_widget)
-    menu_bar = AppMenuBar(service, window)
+    menu_bar = AppMenuBar(database_worker, window)
     window.setMenuBar(menu_bar)
+
+    # database_worker.data_changed_sig.connect(central_widget.refresh_pages)
 
     window.show()
     app.exec()
