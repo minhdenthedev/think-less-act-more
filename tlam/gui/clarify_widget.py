@@ -21,7 +21,7 @@ class ClarifyWidget(QWidget):
     delete_action_sig = Signal(str)
     fetch_thoughts_sig = Signal()
 
-    def __init__(self, service, parent=None):
+    def __init__(self, database_worker: DatabaseWorker, parent=None):
         super().__init__(parent)
 
         self.thought_model = QStandardItemModel()
@@ -34,19 +34,12 @@ class ClarifyWidget(QWidget):
 
         self.dialog_btn_box = QDialogButtonBox(QDialogButtonBox.StandardButton.SaveAll)
 
-        self.database_worker = DatabaseWorker(service)
+        self.database_worker = database_worker
         self.database_worker.capture_tasks.connect(self.display_thoughts)
-
-        self.database_thread = QThread()
-        self.database_worker.moveToThread(self.database_thread)
-        self.database_thread.finished.connect(self.database_worker.deleteLater)
-        self.database_thread.started.connect(self.fetch_thoughts_sig.emit)
 
         self.fetch_thoughts_sig.connect(self.database_worker.fetch_capture_tasks)
         self.delete_action_sig.connect(self.database_worker.delete_action)
         self.clarify_action_sig.connect(self.database_worker.clarify_action)
-
-        self.database_thread.start()
 
         layout = QVBoxLayout(self)
         layout.addWidget(self.thought_list_view)

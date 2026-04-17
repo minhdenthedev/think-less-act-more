@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow
 
 from tlam.core.services import GTDService
 from tlam.gui.app_menu_bar import AppMenuBar
+from tlam.gui.database_worker import DatabaseWorker
 from tlam.gui.main_tab_widget import MainTabWidget
 from tlam.core.gateways import (
     EngagingTaskGateway,
@@ -20,12 +21,14 @@ if __name__ == "__main__":
 
     service = GTDService(initiator, project_gateway, task_gateway, engagin_task_gateway)
 
+    database_worker = DatabaseWorker(service)
+
     app = QApplication(sys.argv)
     window = QMainWindow()
     window.setWindowTitle("Think Less Act More")
     availabe_geom = window.screen().availableGeometry()
     window.resize(availabe_geom.width() // 2, availabe_geom.height() // 2)
-    central_widget = MainTabWidget(service, window)
+    central_widget = MainTabWidget(database_worker, window)
     window.setCentralWidget(central_widget)
     menu_bar = AppMenuBar(service, window)
     window.setMenuBar(menu_bar)

@@ -40,7 +40,7 @@ class CaptureWidget(QWidget):
     fetch_thoughts = Signal()
     add_thought = Signal(str)
 
-    def __init__(self, service: GTDService, parent=None):
+    def __init__(self, database_worker: DatabaseWorker, parent=None):
         super().__init__(parent)
 
         self.thought_list_view = QListView()
@@ -60,18 +60,11 @@ class CaptureWidget(QWidget):
         layout.addWidget(self.thought_list_view)
         layout.addWidget(self.thought_input_field)
 
-        self.database_worker = DatabaseWorker(service)
+        self.database_worker = database_worker
         self.database_worker.capture_tasks.connect(self.display_thoughts)
-
-        self.database_thread = QThread()
-        self.database_worker.moveToThread(self.database_thread)
-        self.database_thread.finished.connect(self.database_worker.deleteLater)
-        self.database_thread.started.connect(self.fetch_thoughts)
 
         self.fetch_thoughts.connect(self.database_worker.fetch_capture_tasks)
         self.add_thought.connect(self.database_worker.add_thought_to_database)
-
-        self.database_thread.start()
 
     def on_thought_input_field_enter(self):
         thought = self.thought_input_field.text()

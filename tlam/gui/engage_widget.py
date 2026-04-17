@@ -35,7 +35,7 @@ class EngageWidget(QWidget):
     fetch_projects_sig = Signal()
     fetch_tasks_sig = Signal()
 
-    def __init__(self, service, parent=None):
+    def __init__(self, database_worker: DatabaseWorker, parent=None):
         super().__init__(parent)
 
         self.project_tree_items = {}
@@ -61,21 +61,14 @@ class EngageWidget(QWidget):
         layout.addWidget(self.engaging_panel)
         layout.addWidget(self.dialog_btn_box)
 
-        self.database_worker = DatabaseWorker(service)
+        self.database_worker = database_worker
         self.database_worker.projects_fetched_sig.connect(self.on_projects_fetched)
         self.database_worker.organized_fetched_sig.connect(
             self.on_organized_tasks_fetched
         )
 
-        self.database_thread = QThread()
-        self.database_worker.moveToThread(self.database_thread)
-        self.database_thread.finished.connect(self.database_worker.deleteLater)
-        self.database_thread.started.connect(self.fetch_projects_sig.emit)
-
         self.fetch_projects_sig.connect(self.database_worker.fetch_projects)
         self.fetch_tasks_sig.connect(self.database_worker.fetch_organized_tasks)
-
-        self.database_thread.start()
 
     def on_item_selected(self, selected: QItemSelection, deselected: QItemSelection):
         indexes = selected.indexes()
@@ -119,4 +112,5 @@ class EngageWidget(QWidget):
 
     def refresh_data(self):
         self.model.clear()
+        self.root = self.model.invisibleRootItem()
         self.fetch_projects_sig.emit()

@@ -19,7 +19,7 @@ class OrganizeWidget(QWidget):
     fetch_projects_sig = Signal()
     organize_action_sig = Signal(str, str)
 
-    def __init__(self, service, parent=None):
+    def __init__(self, database_worker: DatabaseWorker, parent=None):
         super().__init__(parent)
 
         self.action_model = QStandardItemModel()
@@ -27,19 +27,12 @@ class OrganizeWidget(QWidget):
         self.list_view.setModel(self.action_model)
         self.list_view.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
 
-        self.database_worker = DatabaseWorker(service)
+        self.database_worker = database_worker
         self.database_worker.projects_fetched_sig.connect(self.on_projects_fetched)
         self.database_worker.clarified_fetched_sig.connect(self.on_actions_fetched)
 
-        self.database_thread = QThread()
-        self.database_worker.moveToThread(self.database_thread)
-        self.database_thread.finished.connect(self.database_worker.deleteLater)
-        self.database_thread.started.connect(self.fetch_projects_sig.emit)
-
         self.fetch_projects_sig.connect(self.database_worker.fetch_projects)
         self.fetch_actions_sig.connect(self.database_worker.fetch_clarified_tasks)
-
-        self.database_thread.start()
 
         self.dialog_btn_box = QDialogButtonBox(QDialogButtonBox.StandardButton.SaveAll)
 

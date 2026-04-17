@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QTabWidget
 from tlam.core.services import GTDService
 from tlam.gui.capture_widget import CaptureWidget
 from tlam.gui.clarify_widget import ClarifyWidget
+from tlam.gui.database_worker import DatabaseWorker
 from tlam.gui.engage_widget import EngageWidget
 from tlam.gui.organize_widget import OrganizeWidget
 
@@ -18,7 +19,7 @@ class MainTabWidget(QTabWidget):
 
     """
 
-    def __init__(self, service: GTDService, parent=None):
+    def __init__(self, service: DatabaseWorker, parent=None):
         super().__init__(parent)
 
         self.tabs = {
