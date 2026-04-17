@@ -25,7 +25,7 @@ class MainTabWidget(QTabWidget):
             "Capture": CaptureWidget(service),
             "Clarify": ClarifyWidget(service),
             "Organize": OrganizeWidget(service),
-            "Engage": EngageWidget(),
+            "Engage": EngageWidget(service),
         }
 
         self.setup_tabs()

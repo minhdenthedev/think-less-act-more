@@ -1,4 +1,5 @@
-from PySide6.QtCore import QItemSelection
+from typing import List
+from PySide6.QtCore import QItemSelection, QThread, Qt, Signal
 from PySide6.QtGui import QStandardItem, QStandardItemModel
 from PySide6.QtWidgets import (
     QDialogButtonBox,
@@ -10,7 +11,9 @@ from PySide6.QtWidgets import (
     QWidget,
     QApplication,
 )
-import sys
+
+from tlam.core.record import TaskRecord
+from tlam.gui.database_worker import DatabaseWorker
 
 
 class EngagingPanel(QFrame):
@@ -30,32 +33,13 @@ class EngagingPanel(QFrame):
 class EngageWidget(QWidget):
     """Widget for engage page"""
 
-    fake_data = {
-        "Next": [
-            "Email marketing team regarding Q3 budget",
-            "Renew vehicle registration",
-            "Fix the broken door handle in the kitchen",
-            "Schedule annual dental checkup",
-            "Draft project proposal for client X",
-        ],
-        "Someday/Maybe": [
-            "Learn to play the cello",
-            "Backpack through Southeast Asia",
-            "Start a vegetable garden in the backyard",
-            "Take a pottery workshop",
-            "Build a custom mechanical keyboard",
-        ],
-        "Waiting": [
-            "Refund from airline for cancelled flight",
-            "Feedback on the first draft from Sarah",
-            "Package delivery from Amazon (ordered Monday)",
-            "Approval for the new hire requisition",
-            "Repair estimate from the auto shop",
-        ],
-    }
+    fetch_projects_sig = Signal()
+    fetch_tasks_sig = Signal()
 
-    def __init__(self, parent=None):
+    def __init__(self, service, parent=None):
         super().__init__(parent)
+
+        self.project_tree_items = {}
 
         self.engaging_panel = EngagingPanel(self)
 
@@ -65,16 +49,6 @@ class EngageWidget(QWidget):
         self.tree_view.setModel(self.model)
         self.tree_view.setHeaderHidden(True)
         self.tree_view.selectionModel().selectionChanged.connect(self.on_item_selected)
-
-        for project, tasks in self.fake_data.items():
-            parent = QStandardItem(project)
-            parent.setEditable(False)
-            self.root.appendRow(parent)
-
-            for task in tasks:
-                child = QStandardItem(task)
-                child.setEditable(False)
-                parent.appendRow(child)
 
         self.dialog_btn_box = QDialogButtonBox()
         self.engage_btn = QPushButton("Engage")
@@ -87,6 +61,22 @@ class EngageWidget(QWidget):
         layout.addWidget(self.tree_view)
         layout.addWidget(self.engaging_panel)
         layout.addWidget(self.dialog_btn_box)
+
+        self.database_worker = DatabaseWorker(service)
+        self.database_worker.projects_fetched_sig.connect(self.on_projects_fetched)
+        self.database_worker.organized_fetched_sig.connect(
+            self.on_organized_tasks_fetched
+        )
+
+        self.database_thread = QThread()
+        self.database_worker.moveToThread(self.database_thread)
+        self.database_thread.finished.connect(self.database_worker.deleteLater)
+        self.database_thread.started.connect(self.fetch_projects_sig.emit)
+
+        self.fetch_projects_sig.connect(self.database_worker.fetch_projects)
+        self.fetch_tasks_sig.connect(self.database_worker.fetch_organized_tasks)
+
+        self.database_thread.start()
 
     def on_item_selected(self, selected: QItemSelection, deselected: QItemSelection):
         indexes = selected.indexes()
@@ -111,12 +101,19 @@ class EngageWidget(QWidget):
                 )
                 self.engage_btn.setEnabled(False)
 
+    def on_projects_fetched(self, projects):
+        for project in projects:
+            parent = QStandardItem(project.project_name)
+            parent.setEditable(False)
+            parent.setData(project, Qt.ItemDataRole.UserRole)
+            self.root.appendRow(parent)
+            self.project_tree_items[project.project_id] = parent
+        self.fetch_tasks_sig.emit()
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    widget = EngageWidget()
-    availabe_geom = widget.screen().availableGeometry()
-    widget.resize(availabe_geom.width() // 2, availabe_geom.height() // 2)
-    widget.show()
-
-    app.exec()
+    def on_organized_tasks_fetched(self, tasks: List[TaskRecord]):
+        for task in tasks:
+            child = QStandardItem(task.task_title)
+            child.setEditable(False)
+            child.setData(task, Qt.ItemDataRole.UserRole)
+            parent: QStandardItem = self.project_tree_items[task.project_id]
+            parent.appendRow(child)

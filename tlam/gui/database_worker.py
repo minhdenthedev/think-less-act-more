@@ -7,6 +7,7 @@ class DatabaseWorker(QObject):
 
     capture_tasks = Signal(object)
     clarified_fetched_sig = Signal(object)
+    organized_fetched_sig = Signal(object)
     service_clarified_sig = Signal(object)
     projects_fetched_sig = Signal(object)
 
@@ -31,6 +32,10 @@ class DatabaseWorker(QObject):
     def fetch_clarified_tasks(self):
         tasks = self.service.get_clarified_tasks()
         self.clarified_fetched_sig.emit(tasks)
+
+    def fetch_organized_tasks(self):
+        tasks = self.service.get_organized_tasks()
+        self.organized_fetched_sig.emit(tasks)
 
     def fetch_projects(self):
         projects = self.service.get_projects()
