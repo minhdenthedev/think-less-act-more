@@ -1,4 +1,5 @@
 import sys
+from PySide6.QtCore import QThread
 from PySide6.QtWidgets import QApplication, QMainWindow
 
 from tlam.core.services import GTDService
@@ -22,6 +23,10 @@ if __name__ == "__main__":
     service = GTDService(initiator, project_gateway, task_gateway, engagin_task_gateway)
 
     database_worker = DatabaseWorker(service)
+    database_thread = QThread(database_worker)
+    database_thread.finished.connect(database_worker.deleteLater)
+
+    database_thread.start()
 
     app = QApplication(sys.argv)
     window = QMainWindow()
