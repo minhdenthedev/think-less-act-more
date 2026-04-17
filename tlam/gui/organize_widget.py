@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
     QWidget,
     QDialogButtonBox,
 )
-from PySide6.QtCore import QSize, QThread, Signal
+from PySide6.QtCore import QSize, Signal
 
 from tlam.gui.database_worker import DatabaseWorker
 from tlam.gui.organize_item import OrganizeItemWidget

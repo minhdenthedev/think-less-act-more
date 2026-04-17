@@ -1,5 +1,5 @@
 from typing import List
-from PySide6.QtCore import QSize, QThread, Signal
+from PySide6.QtCore import QSize, Signal
 from PySide6.QtGui import QStandardItemModel, QStandardItem
 from PySide6.QtWidgets import (
     QAbstractItemView,

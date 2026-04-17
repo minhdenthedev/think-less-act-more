@@ -1,4 +1,4 @@
-from PySide6.QtCore import QThread, Signal
+from PySide6.QtCore import Signal
 from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtWidgets import QMenu, QMenuBar, QInputDialog
 
@@ -61,12 +61,8 @@ class AppMenuBar(QMenuBar):
         self.addMenu(self.help_menu)
 
         self.database_worker = DatabaseWorker(service)
-        self.database_thread = QThread()
-        self.database_worker.moveToThread(self.database_thread)
 
         self.add_project_sig.connect(self.database_worker.add_project)
-
-        self.database_thread.start()
 
     def on_new_project_action_triggered(self):
         name, ok = QInputDialog.getText(self, "New Project", "Enter project name:")
