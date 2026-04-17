@@ -9,7 +9,6 @@ from PySide6.QtWidgets import (
     QTreeView,
     QVBoxLayout,
     QWidget,
-    QApplication,
 )
 
 from tlam.core.record import TaskRecord
@@ -117,3 +116,7 @@ class EngageWidget(QWidget):
             child.setData(task, Qt.ItemDataRole.UserRole)
             parent: QStandardItem = self.project_tree_items[task.project_id]
             parent.appendRow(child)
+
+    def refresh_data(self):
+        self.model.clear()
+        self.fetch_projects_sig.emit()

@@ -21,7 +21,7 @@ class DatabaseWorker(QObject):
         self.capture_tasks.emit(tasks)
 
     def add_thought_to_database(self, thought):
-        task = self.service.capture(thought)
+        self.service.capture(thought)
 
     def delete_action(self, task_id):
         self.service.delete_task(task_id)
