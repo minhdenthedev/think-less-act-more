@@ -4,12 +4,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow
 from tlam.core.services import GTDService
 from tlam.gui.app_menu_bar import AppMenuBar
 from tlam.gui.main_tab_widget import MainTabWidget
-from tlam.core.gateways import (
-    EngagingTaskGateway,
-    Initiator,
-    ProjectGateway,
-    TaskGateway,
-)
+from tlam.core.gateways import EngagingTaskGateway, Initiator, ProjectGateway, TaskGateway
 from tlam.gui.const import DATABASE_PATH
 
 if __name__ == "__main__":
@@ -27,7 +22,7 @@ if __name__ == "__main__":
     window.resize(availabe_geom.width() // 2, availabe_geom.height() // 2)
     central_widget = MainTabWidget(service, window)
     window.setCentralWidget(central_widget)
-    menu_bar = AppMenuBar(service, window)
+    menu_bar = AppMenuBar(window)
     window.setMenuBar(menu_bar)
 
     window.show()
