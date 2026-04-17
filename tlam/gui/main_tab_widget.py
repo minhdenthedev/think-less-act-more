@@ -19,14 +19,14 @@ class MainTabWidget(QTabWidget):
 
     """
 
-    def __init__(self, service: DatabaseWorker, parent=None):
+    def __init__(self, database_worker: DatabaseWorker, parent=None):
         super().__init__(parent)
 
         self.tabs = {
-            "Capture": CaptureWidget(service),
-            "Clarify": ClarifyWidget(service),
-            "Organize": OrganizeWidget(service),
-            "Engage": EngageWidget(service),
+            "Capture": CaptureWidget(database_worker),
+            "Clarify": ClarifyWidget(database_worker),
+            "Organize": OrganizeWidget(database_worker),
+            "Engage": EngageWidget(database_worker),
         }
 
         self.setup_tabs()
