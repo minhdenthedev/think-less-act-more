@@ -54,4 +54,3 @@ class DatabaseWorker(QObject):
 
     def organize_action(self, task_id, project_id):
         self.service.organized(task_id, project_id)
-        self.data_changed_sig.emit()
