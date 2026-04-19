@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
 )
 
 from tlam.core.record import ProjectRecord
+from tlam.gui.add_project_dialog import AddProjectDialog
 from tlam.gui.database_worker import DatabaseWorker
 
 
@@ -44,6 +45,7 @@ class ProjectsDialog(QDialog):
         )
 
         self.add_button = QPushButton("Add")
+        self.add_button.clicked.connect(self.on_add_button_clicked)
 
         self.delete_button = QPushButton("Delete")
         self.delete_button.setEnabled(False)
@@ -101,3 +103,7 @@ class ProjectsDialog(QDialog):
         self.delete_project_sig.emit(str(project.project_id))
         row = selected_index.row()
         self.project_model.removeRow(row)
+        
+    def on_add_button_clicked(self):
+        dialog = AddProjectDialog(self.database_worker, self)
+        _ = dialog.exec()

@@ -40,12 +40,8 @@ class AppMenuBar(QMenuBar):
         view_projects_action = QAction("&View projects", self)
         view_projects_action.setShortcut("Ctrl+P")
         view_projects_action.triggered.connect(self.on_view_projects_action_triggered)
-        delete_project_action = QAction("&Delete project", self)
-        edit_project_action = QAction("&Edit project", self)
         self.projects_menu.addAction(new_project_action)
         self.projects_menu.addAction(view_projects_action)
-        self.projects_menu.addAction(delete_project_action)
-        self.projects_menu.addAction(edit_project_action)
         # ----------------
 
         # --- SETTINGS ---
