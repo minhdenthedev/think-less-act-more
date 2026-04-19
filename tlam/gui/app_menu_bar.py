@@ -1,6 +1,6 @@
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QAction, QKeySequence
-from PySide6.QtWidgets import QMenu, QMenuBar, QInputDialog
+from PySide6.QtWidgets import QMenu, QMenuBar, QInputDialog, QDialog
 
 from tlam.gui.database_worker import DatabaseWorker
 from tlam.gui.projects_dialog import ProjectsDialog
@@ -68,7 +68,7 @@ class AppMenuBar(QMenuBar):
 
     def on_view_projects_action_triggered(self):
         dialog = ProjectsDialog(self.database_worker, self)
-        dialog.exec()
+        _ = dialog.exec()
 
     def on_new_project_action_triggered(self):
         name, ok = QInputDialog.getText(self, "New Project", "Enter project name:")

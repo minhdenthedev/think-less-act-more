@@ -5,6 +5,7 @@ from PySide6.QtWidgets import (
     QDialog,
     QDialogButtonBox,
     QHBoxLayout,
+    QLabel,
     QListView,
     QPushButton,
     QVBoxLayout,
@@ -56,21 +57,25 @@ class ProjectsDialog(QDialog):
         button_layout.addWidget(self.delete_button)
         button_layout.addWidget(self.edit_button)
         button_layout.addStretch(1)
+        
+        self.help_label = QLabel("View and manage your projects.")
 
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.list_view)
         h_layout.addLayout(button_layout)
 
         self.button_box = QDialogButtonBox(
-            QDialogButtonBox.StandardButton.Save
-            | QDialogButtonBox.StandardButton.Cancel
+            QDialogButtonBox.StandardButton.Close
         )
 
         layout = QVBoxLayout(self)
+        layout.addWidget(self.help_label)
         layout.addLayout(h_layout)
         layout.addWidget(self.button_box)
 
         self.setLayout(layout)
+
+        self.button_box.rejected.connect(self.reject)
 
         self.fetch_projects_sig.emit()
 
