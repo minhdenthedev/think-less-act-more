@@ -81,6 +81,7 @@ class DatabaseWorker(QObject):
     def delete_project(self, project_id: str):
         logger.debug("Delete project")
         self.service.delete_project(project_id)
+        self.data_changed_sig.emit()
         
     def update_project(self, project: ProjectRecord):
         logger.debug("Update project")
