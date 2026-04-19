@@ -3,6 +3,7 @@ from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtWidgets import QMenu, QMenuBar, QInputDialog
 
 from tlam.gui.database_worker import DatabaseWorker
+from tlam.gui.projects_dialog import ProjectsDialog
 
 
 class AppMenuBar(QMenuBar):
@@ -37,6 +38,7 @@ class AppMenuBar(QMenuBar):
         new_project_action.triggered.connect(self.on_new_project_action_triggered)
         view_projects_action = QAction("&View projects", self)
         view_projects_action.setShortcut("Ctrl+P")
+        view_projects_action.triggered.connect(self.on_view_projects_action_triggered)
         delete_project_action = QAction("&Delete project", self)
         edit_project_action = QAction("&Edit project", self)
         self.projects_menu.addAction(new_project_action)
@@ -63,6 +65,10 @@ class AppMenuBar(QMenuBar):
         self.database_worker = database_worker
 
         self.add_project_sig.connect(self.database_worker.add_project)
+
+    def on_view_projects_action_triggered(self):
+        dialog = ProjectsDialog(self.database_worker, self)
+        dialog.exec()
 
     def on_new_project_action_triggered(self):
         name, ok = QInputDialog.getText(self, "New Project", "Enter project name:")

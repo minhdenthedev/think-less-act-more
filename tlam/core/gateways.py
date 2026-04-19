@@ -14,35 +14,51 @@ class Initiator:
     """Initiating the database"""
 
     db_path: Path
+    
+    def check_tables(self):
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        # Query the internal master table
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
+        conn.close()
+        
+        tables = [t[0] for t in tables]
+        return "tasks" in tables and "projects" in tables
 
     def initiate(self):
-        conn = sqlite3.connect(self.db_path)
-        conn.execute("""
-        -- Create the Projects table first (Parent)
-        CREATE TABLE IF NOT EXISTS projects (
-            project_id TEXT PRIMARY KEY NOT NULL,
-            project_name TEXT DEFAULT 'No title',
-            icon TEXT DEFAULT ''
-        );
-        """)
-        conn.execute("""
-        -- Create the Tasks table (Child)
-        CREATE TABLE IF NOT EXISTS tasks (
-            task_id TEXT PRIMARY KEY NOT NULL,
-            task_title TEXT DEFAULT 'No title',
-            project_id TEXT,
-            clarified BOOLEAN DEFAULT 0 CHECK (clarified IN (0, 1)),
-            organized BOOLEAN DEFAULT 0 CHECK (organized IN (0, 1)),
-            done BOOLEAN DEFAULT 0 CHECK (done IN (0, 1)),
+        if self.check_tables():
+            return False
+        else:
+            conn = sqlite3.connect(self.db_path)
+            conn.execute("""
+            -- Create the Projects table first (Parent)
+            CREATE TABLE IF NOT EXISTS projects (
+                project_id TEXT PRIMARY KEY NOT NULL,
+                project_name TEXT DEFAULT 'No title',
+                icon TEXT DEFAULT ''
+            );
+            """)
+            conn.execute("""
+            -- Create the Tasks table (Child)
+            CREATE TABLE IF NOT EXISTS tasks (
+                task_id TEXT PRIMARY KEY NOT NULL,
+                task_title TEXT DEFAULT 'No title',
+                project_id TEXT,
+                clarified BOOLEAN DEFAULT 0 CHECK (clarified IN (0, 1)),
+                organized BOOLEAN DEFAULT 0 CHECK (organized IN (0, 1)),
+                done BOOLEAN DEFAULT 0 CHECK (done IN (0, 1)),
+                
+                -- Link task to a project
+                FOREIGN KEY (project_id) REFERENCES projects (project_id) 
+                    ON DELETE CASCADE
+                    ON UPDATE CASCADE
+            );
+            """)
+            conn.commit()
+            conn.close()
             
-            -- Link task to a project
-            FOREIGN KEY (project_id) REFERENCES projects (project_id) 
-                ON DELETE CASCADE
-                ON UPDATE CASCADE
-        );
-        """)
-        conn.commit()
-        conn.close()
+            return True
 
 
 # Helper to convert SQLite Row -> Dataclass
@@ -63,6 +79,7 @@ class ProjectGateway:
     def _get_connection(self):
         # Return a connection that treats rows like dictionaries
         conn = sqlite3.connect(self.db_path)
+        conn.execute("PRAGMA foreign_keys = ON;")
         conn.row_factory = sqlite3.Row
         return conn
 
@@ -125,6 +142,7 @@ class TaskGateway:
 
     def _get_connection(self):
         conn = sqlite3.connect(self.db_path)
+        conn.execute("PRAGMA foreign_keys = ON;")
         conn.row_factory = sqlite3.Row
         return conn
 

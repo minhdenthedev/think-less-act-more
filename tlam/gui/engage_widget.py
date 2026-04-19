@@ -98,7 +98,7 @@ class EngageWidget(QWidget):
         self.model.clear()
         self.root = self.model.invisibleRootItem()
         for project in projects:
-            parent = QStandardItem(project.project_name)
+            parent = QStandardItem(project.icon + " " + project.project_name)
             parent.setEditable(False)
             parent.setData(project, Qt.ItemDataRole.UserRole)
             self.root.appendRow(parent)

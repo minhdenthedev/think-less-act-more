@@ -52,5 +52,8 @@ class DatabaseWorker(QObject):
             self.service.new_project(name)
         self.data_changed_sig.emit()
 
+    def delete_project(self, project_id: str):
+        self.service.delete_project(project_id)
+
     def organize_action(self, task_id, project_id):
         self.service.organized(task_id, project_id)

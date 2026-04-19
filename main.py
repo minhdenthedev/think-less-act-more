@@ -21,6 +21,7 @@ if __name__ == "__main__":
     engagin_task_gateway = EngagingTaskGateway(DATABASE_PATH)
 
     service = GTDService(initiator, project_gateway, task_gateway, engagin_task_gateway)
+    service.initiate()
 
     database_worker = DatabaseWorker(service)
     database_thread = QThread(database_worker)
@@ -37,8 +38,6 @@ if __name__ == "__main__":
     window.setCentralWidget(central_widget)
     menu_bar = AppMenuBar(database_worker, window)
     window.setMenuBar(menu_bar)
-
-    # database_worker.data_changed_sig.connect(central_widget.refresh_pages)
 
     window.show()
     app.exec()

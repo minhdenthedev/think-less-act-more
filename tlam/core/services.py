@@ -22,10 +22,10 @@ class GTDService:
     engaging_task_gateway: EngagingTaskGateway
 
     def initiate(self):
-        self.db_initiator.initiate()
-        self.new_project("Someday/Maybe", "🗳️")
-        self.new_project("Waiting For", "⏳")
-        self.new_project("Do It Now", "🗲")
+        if self.db_initiator.initiate():
+            self.new_project("Someday/Maybe", "🗳️")
+            self.new_project("Waiting For", "⏳")
+            self.new_project("Do It Now", "🗲")
 
     def capture(self, thought: str) -> TaskRecord:
         task = TaskRecord(task_title=thought)
