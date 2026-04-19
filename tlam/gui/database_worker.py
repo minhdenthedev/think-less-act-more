@@ -1,4 +1,5 @@
 from PySide6.QtCore import QObject, Signal
+from tlam.core.record import ProjectRecord
 from tlam.core.services import GTDService
 
 
@@ -54,6 +55,10 @@ class DatabaseWorker(QObject):
 
     def delete_project(self, project_id: str):
         self.service.delete_project(project_id)
+        
+    def update_project(self, project: ProjectRecord):
+        self.service.edit_project(project)
+        self.data_changed_sig.emit()
 
     def organize_action(self, task_id, project_id):
         self.service.organized(task_id, project_id)

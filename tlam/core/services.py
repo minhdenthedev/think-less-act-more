@@ -82,9 +82,8 @@ class GTDService:
         self.project_gateway.delete(UUID(project_id))
 
     def edit_project(
-        self, project_id: str, project_name: str, icon: str
+        self, project: ProjectRecord
     ) -> ProjectRecord:
-        project = ProjectRecord(UUID(project_id), project_name, icon)
         self.project_gateway.update(project)
         return project
 
