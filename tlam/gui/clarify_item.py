@@ -5,6 +5,15 @@ from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QListView, QPushButton, QW
 from tlam.core.record import TaskRecord
 from tlam.gui import const
 
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    )
+
+logger = logging.getLogger(__name__)
+
 
 class ClarifyItemWidget(QWidget):
     """Item for clarify list widget"""
@@ -45,11 +54,17 @@ class ClarifyItemWidget(QWidget):
         index = self.thought_list_view.indexAt(self.pos())
         if index.isValid():
             self.though_model.removeRow(index.row())
+            logger.info(f"Delete item: {index.row()}")
+
 
     def on_delete_btn_clicked(self):
+        logger.info("Delete button clicked")
         self.delete_this_item()
         self.delete_sig.emit(str(self.though.task_id))
+        logger.debug("delete signal emitted")
 
     def on_clarified_btn_clicked(self):
+        logger.info("Clarify button clicked")
         self.delete_this_item()
         self.clarified_sig.emit(str(self.though.task_id), self.lineEdit.text().strip())
+        logger.debug("clarify signal emitted")

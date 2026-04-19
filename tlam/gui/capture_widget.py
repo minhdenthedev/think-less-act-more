@@ -13,6 +13,15 @@ from tlam.core.record import TaskRecord
 from tlam.core.services import GTDService
 from tlam.gui.database_worker import DatabaseWorker
 
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    )
+
+logger = logging.getLogger(__name__)
+
 
 class CaptureWidget(QWidget):
     """
@@ -50,11 +59,14 @@ class CaptureWidget(QWidget):
         self.add_thought.connect(self.database_worker.add_thought_to_database)
 
     def on_thought_input_field_enter(self):
+        logger.info("Thought input field entered.")
         thought = self.thought_input_field.text()
         self.thought_input_field.clear()
         self.add_thought.emit(thought)
+        logger.debug("add thought signal emitted")
 
     def display_thoughts(self, thoughts: List[TaskRecord]):
+        logger.info("Display thoughts")
         self.thought_model.clear()
         for thought in thoughts:
             item = QStandardItem(thought.task_title)
@@ -62,5 +74,7 @@ class CaptureWidget(QWidget):
             self.thought_model.appendRow(item)
 
     def refresh_data(self):
+        logger.info("Refresh data")
         self.thought_model.clear()
         self.fetch_thoughts.emit()
+        logger.debug("fetch thought signal emitted")

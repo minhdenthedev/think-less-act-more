@@ -11,6 +11,15 @@ from PySide6.QtCore import QSize, Signal
 from tlam.gui.database_worker import DatabaseWorker
 from tlam.gui.organize_item import OrganizeItemWidget
 
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    )
+
+logger = logging.getLogger(__name__)
+
 
 class OrganizeWidget(QWidget):
     """Widget for organize page"""
@@ -44,6 +53,7 @@ class OrganizeWidget(QWidget):
         self.projects = []
 
     def display_actions(self, actions):
+        logger.info("Display actions")
         self.action_model.clear()
         for a in actions:
             item = QStandardItem()
@@ -61,11 +71,15 @@ class OrganizeWidget(QWidget):
             self.list_view.setIndexWidget(index, organize_widget)
 
     def on_projects_fetched(self, projects):
+        logger.info("on projects fetched")
         self.projects = projects
         self.fetch_actions_sig.emit()
+        logger.debug("fetch actions emitted")
 
     def on_actions_fetched(self, actions):
+        logger.info("on actions fetched")
         self.display_actions(actions)
 
     def refresh_data(self):
         self.fetch_projects_sig.emit()
+        logger.debug("fetch projects emitted.")

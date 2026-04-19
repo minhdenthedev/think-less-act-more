@@ -6,6 +6,15 @@ from tlam.gui.add_project_dialog import AddProjectDialog
 from tlam.gui.database_worker import DatabaseWorker
 from tlam.gui.projects_dialog import ProjectsDialog
 
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    )
+
+logger = logging.getLogger(__name__)
+
 
 class AppMenuBar(QMenuBar):
     """Menu bar of the application"""
@@ -64,9 +73,11 @@ class AppMenuBar(QMenuBar):
         self.add_project_sig.connect(self.database_worker.add_project)
 
     def on_view_projects_action_triggered(self):
+        logger.info("View projects action triggered")
         dialog = ProjectsDialog(self.database_worker, self)
         _ = dialog.exec()
 
     def on_new_project_action_triggered(self):
+        logger.info("Add project action triggered")
         dialog = AddProjectDialog(self.database_worker, self)
         _ = dialog.exec()

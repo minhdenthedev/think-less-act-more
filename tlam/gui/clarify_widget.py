@@ -13,6 +13,15 @@ from tlam.core.record import TaskRecord
 from tlam.gui.clarify_item import ClarifyItemWidget
 from tlam.gui.database_worker import DatabaseWorker
 
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    )
+
+logger = logging.getLogger(__name__)
+
 
 class ClarifyWidget(QWidget):
     """Widget for clarify page"""
@@ -47,9 +56,11 @@ class ClarifyWidget(QWidget):
         layout.addWidget(self.dialog_btn_box)
 
     def delete_item_from_list_view(self, row):
+        logger.info(f"Remove item from list view")
         self.thought_model.removeRow(row)
 
     def display_thoughts(self, thoughts: List[TaskRecord]):
+        logger.info("Display thoughts")
         self.thought_model.clear()
         for t in thoughts:
             item = QStandardItem()
@@ -69,10 +80,16 @@ class ClarifyWidget(QWidget):
             self.thought_list_view.setIndexWidget(index, clarify_widget)
 
     def clarify_act(self, task_id, task_title):
+        logger.info("Clarify act")
         self.clarify_action_sig.emit(task_id, task_title)
+        logger.debug("clarify signal emitted")
 
     def delete_act(self, task_id):
+        logger.info("Delete act")
         self.delete_action_sig.emit(task_id)
+        logger.debug("delete signal emitted")
 
     def refresh_data(self):
+        logger.info("Refresh data")
         self.fetch_thoughts_sig.emit()
+        logger.debug("fetch thoughts signal emitted.")

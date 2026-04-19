@@ -13,6 +13,15 @@ from typing import List
 from tlam.core.record import ProjectRecord, TaskRecord
 from tlam.gui import const
 
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    )
+
+logger = logging.getLogger(__name__)
+
 
 class OrganizeItemWidget(QWidget):
     """Widget for organize item in a list view"""
@@ -58,8 +67,11 @@ class OrganizeItemWidget(QWidget):
         index = self.list_view.indexAt(self.pos())
         if index.isValid():
             self.model.removeRow(index.row())
+            logger.info(f"Remove row: {index.row()}")
 
     def on_ok_button_clicked(self):
+        logger.info("Done organize")
         self.delete_this_item()
         project = self.combo_box.currentData(Qt.ItemDataRole.UserRole)
         self.organize_sig.emit(str(self.task.task_id), str(project.project_id))
+        logger.debug("organize signal emitted")

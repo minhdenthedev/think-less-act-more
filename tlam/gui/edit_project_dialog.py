@@ -12,6 +12,15 @@ from PySide6.QtWidgets import (
 from tlam.core.record import ProjectRecord
 from tlam.gui.database_worker import DatabaseWorker
 
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    )
+
+logger = logging.getLogger(__name__)
+
 
 class EditProjectDialog(QDialog):
     """
@@ -62,4 +71,6 @@ class EditProjectDialog(QDialog):
         self.project.icon = self.icon_edit.text()
         self.project.project_name = self.name_edit.text()
         self.edit_project_sig.emit(self.project)
+        logger.info(f"Edit project accepted: {icon, name}")
+        logger.debug("Edit project signal emitted")
         super().accept()

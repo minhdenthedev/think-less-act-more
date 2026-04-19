@@ -11,6 +11,15 @@ from PySide6.QtWidgets import (
 
 from tlam.gui.database_worker import DatabaseWorker
 
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    )
+
+logger = logging.getLogger(__name__)
+
 
 class AddProjectDialog(QDialog):
     """
@@ -56,6 +65,9 @@ class AddProjectDialog(QDialog):
         icon = self.icon_edit.text()
         name = self.name_edit.text()
         
+        logger.info(f"Add dialog accepted: {icon, name}")
+        
         self.add_project_sig.emit(name, icon)
+        logger.debug("Add project signal emitted")
         
         super().accept()

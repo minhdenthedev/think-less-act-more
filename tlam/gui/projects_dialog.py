@@ -16,6 +16,15 @@ from tlam.gui.add_project_dialog import AddProjectDialog
 from tlam.gui.database_worker import DatabaseWorker
 from tlam.gui.edit_project_dialog import EditProjectDialog
 
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    )
+
+logger = logging.getLogger(__name__)
+
 
 class ProjectsDialog(QDialog):
     """
@@ -82,6 +91,7 @@ class ProjectsDialog(QDialog):
         self.fetch_projects_sig.emit()
 
     def on_projects_fetched(self, projects: List[ProjectRecord]):
+        logger.info("Projects fetched")
         self.project_model.clear()
         for project in projects:
             item = QStandardItem(project.icon + " " + project.project_name)
@@ -94,6 +104,7 @@ class ProjectsDialog(QDialog):
 
         if indexes:
             index = indexes[0]
+            logger.info(f"Project selected: {index.row()}")
             self.delete_button.setEnabled(True)
             self.edit_button.setEnabled(True)
 
@@ -102,6 +113,7 @@ class ProjectsDialog(QDialog):
         project: ProjectRecord = self.project_model.data(
             selected_index, Qt.ItemDataRole.UserRole
         )
+        logger.info(f"Delete project: {project.project_name}")
         self.delete_project_sig.emit(str(project.project_id))
         row = selected_index.row()
         self.project_model.removeRow(row)
@@ -111,9 +123,11 @@ class ProjectsDialog(QDialog):
         project: ProjectRecord = self.project_model.data(
             selected_index, Qt.ItemDataRole.UserRole
         )
+        logger.info(f"Edit project: {project.project_name}")
         dialog = EditProjectDialog(project, self.database_worker, self)
         _ = dialog.exec()
         
     def on_add_button_clicked(self):
+        logger.info("Add button clicked")
         dialog = AddProjectDialog(self.database_worker, self)
         _ = dialog.exec()

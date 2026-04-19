@@ -14,6 +14,15 @@ from PySide6.QtWidgets import (
 from tlam.core.record import TaskRecord
 from tlam.gui.database_worker import DatabaseWorker
 
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    )
+
+logger = logging.getLogger(__name__)
+
 
 class EngagingPanel(QFrame):
     """Frame for engaging panel"""
@@ -95,6 +104,7 @@ class EngageWidget(QWidget):
                 self.engage_btn.setEnabled(False)
 
     def on_projects_fetched(self, projects):
+        logger.info("Display projects")
         self.model.clear()
         self.root = self.model.invisibleRootItem()
         for project in projects:
@@ -106,6 +116,7 @@ class EngageWidget(QWidget):
         self.fetch_tasks_sig.emit()
 
     def on_organized_tasks_fetched(self, tasks: List[TaskRecord]):
+        logger.info("Display tasks")
         for task in tasks:
             child = QStandardItem(task.task_title)
             child.setEditable(False)
@@ -115,3 +126,4 @@ class EngageWidget(QWidget):
 
     def refresh_data(self):
         self.fetch_projects_sig.emit()
+        logger.debug("fetch project signal emitted.")
